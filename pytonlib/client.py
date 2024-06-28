@@ -758,7 +758,7 @@ class TonlibClient:
             for b in range(3):
                 block = await self.lookup_block(workchain, shardchain, lt=int(creation_lt) + b * 1000000)
                 txs = await self.get_block_transactions(workchain,
-                                                        shardchain,
+                                                        block["shard"],
                                                         block["seqno"],
                                                         count=40,
                                                         root_hash=block["root_hash"],
@@ -796,7 +796,7 @@ class TonlibClient:
             shardchain = shard_data['shard']
             block = await self.lookup_block(workchain, shardchain, lt=int(creation_lt))
             txses = await self.get_block_transactions(workchain,
-                                                      shardchain,
+                                                      block["shard"],
                                                       block["seqno"],
                                                       count=40,
                                                       root_hash=block["root_hash"],
