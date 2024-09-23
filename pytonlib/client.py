@@ -1,5 +1,5 @@
 import asyncio
-import json
+import orjson
 import codecs
 import struct
 import logging
@@ -77,7 +77,7 @@ class TonlibClient:
                     '@type': 'options',
                     'config': {
                         '@type': 'config',
-                        'config': json.dumps(self.local_config),
+                        'config': orjson.dumps(self.local_config),
                         'use_callbacks_for_network': False,
                         'blockchain_name': '',
                         'ignore_cache': False

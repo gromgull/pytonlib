@@ -1,4 +1,4 @@
-import json
+import orjson
 import platform
 import traceback
 
@@ -44,6 +44,10 @@ class BlockDeleted(TonlibError):
 
 class ExternalMessageNotAccepted(TonlibError):
     pass
+
+def bytes_serializer(val):
+    if isinstance(val, bytes): return val.decode('utf-8')
+    raise TypeError
 
 def parse_tonlib_error(result):
     if result.get('@type') == 'error':
@@ -139,7 +143,7 @@ class TonLib:
         if not self._is_working:
             raise RuntimeError(f"TonLib failed with state: {self._state}")
 
-        query = json.dumps(query).encode('utf-8')
+        query = orjson.dumps(query, default=bytes_serializer)
         try:
             self._tonlib_json_client_send(self._client, query)
         except Exception as ee:
@@ -154,7 +158,7 @@ class TonLib:
             logger.error(f"Exception in tonlibjson.receive: {traceback.format_exc()}")
             raise RuntimeError(f'Error in tonlibjson.receive: {ee}')
         if result:
-            result = json.loads(result.decode('utf-8'))
+            result = orjson.loads(result)
         return result
 
     def execute(self, query, timeout=10):

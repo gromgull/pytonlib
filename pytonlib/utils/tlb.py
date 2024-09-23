@@ -5,7 +5,7 @@ from copy import copy
 from bitarray import bitarray
 from bitarray.util import ba2int, ba2hex, hex2ba
 import math
-import json
+import orjson
 from hashlib import sha256
 
 class Slice:
@@ -756,7 +756,7 @@ def parse_transaction(b64_tx_data: str) -> dict:
     tx = Transaction(cell_slice)
     cell_slice.raise_if_not_empty()
 
-    return json.loads(json.dumps(tx, default=lambda o: o.__dict__))
+    return orjson.loads(orjson.dumps(tx, default=lambda o: o.__dict__))
 
 # Deprecated, use boc_to_object
 def parse_tlb_object(b64_boc: str, tlb_type: type):
@@ -769,7 +769,7 @@ def parse_tlb_object(b64_boc: str, tlb_type: type):
     else:
         object = tlb_type(cell_slice)
     cell_slice.raise_if_not_empty()
-    return json.loads(json.dumps(object, default=lambda o: o.__dict__))
+    return orjson.loads(orjson.dumps(object, default=lambda o: o.__dict__))
 
 def boc_to_object(b64_boc: str, tlb_type: type):
     boc = codecs.decode(codecs.encode(b64_boc, 'utf-8'), 'base64')
