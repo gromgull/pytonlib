@@ -2,7 +2,8 @@ import json
 import platform
 import traceback
 
-import pkg_resources
+from importlib import resources
+from pathlib import Path
 import random
 import asyncio
 import time
@@ -72,13 +73,16 @@ def get_tonlib_path():
         lib_name = f'tonlibjson.{machine}.dll'
     else:
         raise RuntimeError(f"Platform '{arch_name}({machine})' is not compatible yet")
-    return pkg_resources.resource_filename('pytonlib', f'distlib/{arch_name}/{lib_name}')
+
+    return resources.files('pytonlib') / f'distlib/{arch_name}/{lib_name}'
 
 # class TonLib for single liteserver
 class TonLib:
     def __init__(self, loop, ls_index, cdll_path=None, verbosity_level=0):
-        cdll_path = get_tonlib_path() if not cdll_path else cdll_path
-        tonlib = CDLL(cdll_path)
+        cdll_path = get_tonlib_path() if not cdll_path else Path(cdll_path)
+
+        with resources.as_file(cdll_path) as path:
+            tonlib = CDLL(path)
 
         tonlib_client_set_verbosity_level = tonlib.tonlib_client_set_verbosity_level
         tonlib_client_set_verbosity_level.restype = None
